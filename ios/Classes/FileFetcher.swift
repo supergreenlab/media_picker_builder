@@ -13,6 +13,7 @@ class FileFetcher {
         var albums = [Album]()
         
         let options = PHFetchOptions()
+        options.fetchLimit = 500;
         options.sortDescriptors = [NSSortDescriptor.init(key: "endDate", ascending: false)]  // TODO: This does not work, I don't know why
         let topLevelUserCollections = PHCollectionList.fetchTopLevelUserCollections(with: options)
         let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: options)
@@ -201,7 +202,7 @@ class FileFetcher {
         var saved = false
         PHCachingImageManager.default().requestImage(for: asset, targetSize: imageSize, contentMode: imageContentMode, options: options) { (image, info) in
             do {
-                try UIImagePNGRepresentation(image!)?.write(to: destination)
+                try image!.pngData()?.write(to: destination)
                 saved = true
             } catch (let error) {
                 print(error)
