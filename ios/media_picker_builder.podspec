@@ -16,6 +16,5 @@ A plugin that returns multimedia picker data such as folders and its content pat
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 end
-
