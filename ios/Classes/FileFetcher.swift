@@ -283,7 +283,7 @@ class FileFetcher {
     }
 }
 
-extension UIImageOrientation{
+extension UIImage.Orientation{
     func inDegrees() -> Int {
         switch  self {
         case .down:
