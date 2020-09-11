@@ -12,13 +12,8 @@ class FileFetcher {
     static func getAlbums(withImages: Bool, withVideos: Bool, loadPaths: Bool)-> [Album] {
         var albums = [Album]()
         
-        let options = PHFetchOptions()
-        options.fetchLimit = 500;
-        options.sortDescriptors = [NSSortDescriptor.init(key: "endDate", ascending: false)]  // TODO: This does not work, I don't know why
-        let topLevelUserCollections = PHCollectionList.fetchTopLevelUserCollections(with: options)
-        let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: options)
-        
         let fetchOptions = PHFetchOptions()
+        fetchOptions.fetchLimit = 100;
         fetchOptions.sortDescriptors = [NSSortDescriptor.init(key: "creationDate", ascending: false)]
         if withImages && withVideos {
             fetchOptions.predicate = NSPredicate(format: "mediaType == %d || mediaType == %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
@@ -28,7 +23,7 @@ class FileFetcher {
             fetchOptions.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue)
         }
         
-        topLevelUserCollections.enumerateObjects{(topLevelAlbumAsset, index, stop) in
+        /*topLevelUserCollections.enumerateObjects{(topLevelAlbumAsset, index, stop) in
             if (topLevelAlbumAsset is PHAssetCollection) {
                 let topLevelAlbum = topLevelAlbumAsset as! PHAssetCollection
                 let album = fetchAssets(forCollection: topLevelAlbum, fetchOptions: fetchOptions, loadPath: loadPaths)
@@ -36,21 +31,27 @@ class FileFetcher {
                     albums.append(album!)
                 }
             }
-        }
-        
-        smartAlbums.enumerateObjects{(smartAlbum, index, stop) in
-            let album = fetchAssets(forCollection: smartAlbum, fetchOptions: fetchOptions, loadPath: loadPaths)
-            if album != nil {
-                albums.append(album!)
+        }*/
+
+        let assets = PHAsset.fetchAssets(with: fetchOptions)
+        var files = [MediaFile]()
+        assets.enumerateObjects{asset, index, info in
+            if let mediaFile = getMediaFile(for: asset, loadPath: loadPaths, generateThumbnailIfNotFound: false) {
+                files.append(mediaFile)
             }
         }
-        return albums
+
+        return [Album.init(
+            id: "1",
+            name: "Medias",
+            files: files)]
     }
     
     static func fetchAssets(forCollection collection: PHAssetCollection, fetchOptions: PHFetchOptions, loadPath: Bool) -> Album? {
         let assets = PHAsset.fetchAssets(in: collection, options: fetchOptions)
         var files = [MediaFile]()
         assets.enumerateObjects{asset, index, info in
+            print(index)
             if let mediaFile = getMediaFile(for: asset, loadPath: loadPath, generateThumbnailIfNotFound: false) {
                 files.append(mediaFile)
             } else {
