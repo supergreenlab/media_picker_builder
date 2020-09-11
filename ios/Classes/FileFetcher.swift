@@ -13,7 +13,7 @@ class FileFetcher {
         var albums = [Album]()
         
         let fetchOptions = PHFetchOptions()
-        fetchOptions.fetchLimit = 100;
+        fetchOptions.fetchLimit = 50;
         fetchOptions.sortDescriptors = [NSSortDescriptor.init(key: "creationDate", ascending: false)]
         if withImages && withVideos {
             fetchOptions.predicate = NSPredicate(format: "mediaType == %d || mediaType == %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
